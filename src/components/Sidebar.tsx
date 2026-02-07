@@ -36,8 +36,8 @@ export default function Sidebar() {
                             key={item.name}
                             href={item.href}
                             className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${isActive
-                                    ? 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg'
-                                    : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+                                ? 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg'
+                                : 'text-gray-300 hover:bg-gray-700 hover:text-white'
                                 }`}
                         >
                             <span className="text-2xl">{item.icon}</span>
