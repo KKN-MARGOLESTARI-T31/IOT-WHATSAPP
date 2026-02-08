@@ -55,6 +55,13 @@ export async function POST(request: NextRequest) {
 
             console.log(`📨 Incoming message from ${sender}: ${message}`);
 
+            // LOOP PROTECTION: Ignore messages sent by the bot itself
+            // Fonnte (free tier) adds a footer to API messages. We must not reply to them.
+            if (message.includes('Sent via fonnte.com') || message.startsWith('❌ Maaf, kami tidak mengerti') || message.startsWith('🤖 *MENU UTAMA*')) {
+                console.log('🛑 Ignoring bot loop / self-message');
+                return NextResponse.json({ success: true, type: 'ignored_self_message' }, { status: 200 });
+            }
+
             // Check for auto-reply rules (only for text messages)
             if (type === 'text' || !type) { // Default to text if type not specified
                 const autoReplyText = await checkAutoReply(message);
@@ -120,7 +127,7 @@ export async function POST(request: NextRequest) {
 
     } catch (error) {
         console.error('❌ Error processing Fonnte webhook:', error);
-        return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+        return NextResponse.json({ error: error instanceof Error ? error.message : 'Unknown error' }, { status: 500 });
     }
 }
 

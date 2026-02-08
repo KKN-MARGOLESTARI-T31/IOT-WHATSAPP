@@ -217,15 +217,6 @@ Silakan balas dengan angka pilihan:
 2️⃣ *ON OFF PUMP*
    _Cek status & kontrol pompa_
 
-3️⃣ *STATUS LAHAN*
-   _Cek kondisi lahan_
-
-4️⃣ *ADMIN MESSAGE*
-   _Info kontak admin_
-
-5️⃣ *RIWAYAT*
-   _Riwayat pompa & sensoh pH_
-
 Kenyamanan Anda adalah prioritas kami! 🌿`;
 }
 
@@ -312,7 +303,12 @@ async function getPumpStatus(): Promise<string> {
             lastUpdate = new Date(rows[0].updatedAt).toLocaleString('id-ID');
         }
 
-        return `🔌 *KONTROL POMPA (SAWAH)*\n\nStatus saat ini: *${status}*\nTerakhir update: ${lastUpdate}\n\nUntuk mengubah status, balas:\n*PUMP ON* - Nyalakan pompa\n*PUMP OFF* - Matikan pompa`;
+        // Dynamic reply option based on status
+        // If ON, suggest OFF. If OFF, suggest ON.
+        const toggleCommand = status.includes('ON') ? 'OFF' : 'ON';
+        const toggleDesc = status.includes('ON') ? 'Matikan pompa' : 'Nyalakan pompa';
+
+        return `🔌 *KONTROL POMPA (SAWAH)*\n\nStatus saat ini: *${status}*\nTerakhir update: ${lastUpdate}\n\nBalas *${toggleCommand}* untuk ${toggleDesc.toLowerCase()}.`;
     } catch (error) {
         console.error('Error fetching pump status:', error);
         return '❌ Gagal mengambil status pompa.';
@@ -445,7 +441,7 @@ export async function checkAutoReply(messageBody: string): Promise<string | null
         // --- DYNAMIC MENU LOGIC ---
 
         // 1. MENU
-        if (cleanMessage === 'MENU' || cleanMessage === 'HELP') {
+        if (cleanMessage === 'MENU' || cleanMessage === 'CEK') {
             return getMenuMessage();
         }
 
@@ -456,21 +452,13 @@ export async function checkAutoReply(messageBody: string): Promise<string | null
         if (cleanMessage === '2') {
             return await getPumpStatus();
         }
-        if (cleanMessage === '3') {
-            return getStatusLahan();
-        }
-        if (cleanMessage === '4') {
-            return getAdminMessage();
-        }
-        if (cleanMessage === '5') {
-            return await getRiwayat();
-        }
+
 
         // 3. PUMP COMMANDS
-        if (cleanMessage === 'PUMP ON') {
+        if (cleanMessage === 'ON') {
             return await handlePumpControl('ON');
         }
-        if (cleanMessage === 'PUMP OFF') {
+        if (cleanMessage === 'OFF') {
             return await handlePumpControl('OFF');
         }
 
@@ -501,10 +489,10 @@ export async function checkAutoReply(messageBody: string): Promise<string | null
             }
         }
 
-        return null;
+        return `❌ Maaf, kami tidak mengerti perintah Anda.\n\nSilakan ketik *MENU* atau *CEK* untuk melihat pilihan yang tersedia.`;
     } catch (error) {
         console.error('Error in checkAutoReply:', error);
-        return null;
+        return null; // Keep null on error to avoid spamming error messages
     }
 }
 
