@@ -1,223 +1,108 @@
-# Fonnte WhatsApp Bot - Neon Database Integration
+# IoT WhatsApp Bot (Next.js + Neon + Fonnte)
 
-Web application untuk mengintegrasikan Neon PostgreSQL database dengan WhatsApp menggunakan **Fonnte API**.
+Aplikasi bot WhatsApp pintar untuk monitoring dan kontrol perangkat IoT (Pompa Air & Sensor Ketinggian Air/PH) secara real-time. Dibangun menggunakan Next.js, database Neon (PostgreSQL), dan integrasi API WhatsApp Fonnte.
 
-> **Why Fonnte?** Tidak perlu Meta Developer account, setup lebih mudah, dan support Indonesia!
+## 🌟 Fitur Utama
 
-## 📋 Features
+1.  **Monitoring Data Real-time**
+    *   Melihat logs sensor terbaru (PH, Battery, Water Level).
+    *   Format data rapi dan mudah dibaca via WhatsApp.
+    
+2.  **Kontrol Jarak Jauh (Remote Control)**
+    *   **Nyalakan Pompa**: Kirim perintah `ON` untuk menyalakan pompa.
+    *   **Matikan Pompa**: Kirim perintah `OFF` untuk mematikan pompa.
+    *   **Cek Status**: Mengetahui apakah pompa sedang menyala atau mati beserta waktu update terakhir.
 
-- ✅ **Send Messages**: Kirim pesan WhatsApp dari dashboard (via Fonnte)
-- ✅ **Receive Messages**: Terima pesan via webhook
-- ✅ **Contact Management**: Kelola kontak WhatsApp
-- ✅ **Message History**: Lihat riwayat pesan (inbound & outbound)
-- ✅ **Auto-Reply**: Balas otomatis berdasarkan keyword
-- ✅ **Dashboard Statistics**: Monitor aktivitas bot
-- 🚧 **Broadcast**: Kirim pesan ke multiple contacts (coming soon)
+3.  **Auto-Reply Cerdas**
+    *   **Menu Navigasi**: Ketik `MENU` atau `CEK` untuk melihat pilihan.
+    *   **Sapaan**: Menjawab `hai`, `halo`, dll.
+    *   **Fallback**: Memberi panduan jika user mengirim perintah yang tidak dikenali.
 
-## 🚀 Tech Stack
+## 🛠️ Tech Stack
 
-- **Framework**: Next.js 16 (App Router)
-- **Database**: Neon PostgreSQL (Serverless)
-- **WhatsApp API**: Fonnte
-- **Styling**: Tailwind CSS
-- **Language**: TypeScript
+*   **Framework**: [Next.js 14+](https://nextjs.org/) (App Router)
+*   **Database**: [Neon](https://neon.tech/) (Serverless PostgreSQL)
+*   **WhatsApp API**: [Fonnte](https://fonnte.com/)
+*   **Deployment**: [Vercel](https://vercel.com/)
+*   **Language**: TypeScript
 
-## 📦 Quick Start
+## 🚀 Cara Penggunaan (User WhatsApp)
 
-### Prerequisites
-- Node.js 18+
-- Akun [Neon Database](https://neon.tech) (gratis)
-- Akun [Fonnte](https://fonnte.com) (berbayar, ~50rb/bulan)
+Pastikan nomor Anda sudah terdaftar atau bot sudah aktif.
+Berikut adalah perintah dasar yang bisa dikirim ke nomor bot:
 
-### Installation
+| Perintah | Fungsi |
+| :--- | :--- |
+| `MENU` / `CEK` | Menampilkan menu utama. |
+| `1` | Melihat **Monitoring Logs** (Status Air, Baterai). |
+| `2` | Melihat **Status Pompa** (On/Off). |
+| `ON` | Menyalakan Pompa. |
+| `OFF` | Mematikan Pompa. |
 
-1. **Clone & Install**
-   ```bash
-   git clone <repository-url>
-   cd meta-wa-bot
-   npm install
-   ```
+## ⚙️ Instalasi & Setup Lokal
 
-2. **Setup Database**
-   - Buat project di [Neon Console](https://console.neon.tech/)
-   - Copy connection string
-   - Run `migration.sql` di SQL Editor
+1.  **Clone Repository**
+    ```bash
+    git clone https://github.com/KKN-MARGOLESTARI-T31/IOT-WHATSAPP.git
+    cd IOT-WHATSAPP
+    ```
 
-3. **Setup Fonnte**
-   - Daftar di [fonnte.com](https://fonnte.com)
-   - Isi pulsa (minimal 50rb)
-   - Hubungkan WhatsApp (scan QR)
-   - Copy API token dari dashboard
+2.  **Install Dependencies**
+    ```bash
+    npm install
+    ```
 
-4. **Configure Environment**
-   ```bash
-   cp .env.example .env.local
-   ```
-   
-   Edit `.env.local`:
-   ```env
-   DATABASE_URL=postgresql://...
-   FONNTE_TOKEN=xxxxx+xxxxxxxxxxxxxxx
-   NEXT_PUBLIC_APP_URL=http://localhost:3000
-   ```
+3.  **Konfigurasi Environment (`.env`)**
+    Buat file `.env` dan isi dengan kredensial Anda:
+    ```env
+    # Database Neon
+    DATABASE_URL="postgresql://user:pass@endpoint.neon.tech/neondb?sslmode=require"
+    SOURCE_DATABASE_URL="postgresql://user:pass@endpoint-source.neon.tech/neondb?sslmode=require"
 
-5. **Run**
-   ```bash
-   npm run dev
-   ```
-   
-   Buka [http://localhost:3000](http://localhost:3000)
+    # Fonnte API (Untuk kirim WA)
+    FONNTE_TOKEN="TOKEN_FONNTE_ANDA"
 
-📚 **Lihat [SETUP-FONNTE.md](./SETUP-FONNTE.md) untuk panduan lengkap!**
+    # App Config
+    NEXT_PUBLIC_APP_URL="http://localhost:3000"
+    ```
 
----
+4.  **Jalankan Server Development**
+    ```bash
+    npm run dev
+    ```
+    Buka [http://localhost:3000](http://localhost:3000) di browser.
 
-## 🔌 API Endpoints
+5.  **Expose ke Internet (Untuk Webhook)**
+    Gunakan Ngrok agar Fonnte bisa mengirim pesan ke localhost Anda:
+    ```bash
+    ngrok http 3000
+    ```
+    Copy URL Ngrok ke Dashboard Fonnte (Menu Webhooks).
 
-### Webhook
-- `POST /api/webhook-fonnte` - Receive messages from Fonnte
+## 🌐 Deployment (Vercel)
 
-### Messages
-- `GET /api/messages` - Get messages (with optional phone filter)
-- `POST /api/messages/send` - Send a message via Fonnte
+1.  Push kode ke GitHub.
+2.  Import project di Dashboard Vercel.
+3.  **PENTING**: Masukkan semua variabel `.env` ke **Environment Variables** di Vercel.
+    *   `DATABASE_URL`
+    *   `FONNTE_TOKEN` (Jangan sampai salah/typo!)
+    *   `NEXT_PUBLIC_APP_URL` (Isi dengan domain Vercel Anda, misal: `https://project.vercel.app`)
+4.  Deploy!
+5.  **Update Webhook Fonnte**:
+    Masuk ke Dashboard Fonnte dan arahkan webhook ke:
+    `https://project-name.vercel.app/api/webhook-fonnte`
 
-### Contacts
-- `GET /api/contacts` - Get all contacts
+## 📂 Struktur Database
 
-### Statistics
-- `GET /api/stats` - Get dashboard statistics
-
----
-
-## 📁 Project Structure
-
-```
-meta-wa-bot/
-├── src/
-│   ├── app/
-│   │   ├── api/
-│   │   │   ├── webhook-fonnte/route.ts  # Fonnte webhook
-│   │   │   ├── messages/
-│   │   │   ├── contacts/route.ts
-│   │   │   └── stats/route.ts
-│   │   ├── dashboard/page.tsx
-│   │   ├── messages/page.tsx
-│   │   ├── contacts/page.tsx
-│   │   └── auto-reply/page.tsx
-│   ├── components/
-│   │   ├── SendMessageForm.tsx
-│   │   ├── MessageList.tsx
-│   │   ├── ContactList.tsx
-│   │   └── Sidebar.tsx
-│   └── lib/
-│       ├── db.ts                    # Neon database
-│       ├── whatsapp-fonnte.ts       # Fonnte API client
-│       └── types.ts
-├── migration.sql
-├── SETUP-FONNTE.md                  # 👈 Setup guide
-└── README.md
-```
+*   `monitoring_logs`: Menyimpan data sensor IoT.
+*   `device_controls`: Menyimpan status perintah pompa (ON/OFF).
+*   `auto_reply_rules` (Optional): Menyimpan keyword balasan otomatis statis.
+*   `audit_logs`: Mencatat history pesan masuk dan keluar.
+*   `message_queue`: Antrian pesan WhatsApp.
 
 ---
-
-## 🤖 Auto-Reply Setup
-
-```sql
--- Tambah rule di Neon SQL Editor
-INSERT INTO auto_reply_rules (keyword, reply_message, match_type, is_active)
-VALUES ('halo', 'Halo! Ada yang bisa saya bantu?', 'exact', true);
-```
-
-Match types:
-- **exact**: Pesan sama persis dengan keyword
-- **contains**: Pesan mengandung keyword
-- **starts_with**: Pesan dimulai dengan keyword
-
----
-
-## 🚀 Deployment
-
-### Deploy ke Vercel
-
-1. Push to GitHub
-2. Import di [Vercel](https://vercel.com)
-3. Add environment variables:
-   - `DATABASE_URL`
-   - `FONNTE_TOKEN`
-   - `NEXT_PUBLIC_APP_URL`
-4. Deploy
-5. Update webhook di Fonnte → `https://your-app.vercel.app/api/webhook-fonnte`
-
----
-
-## 💰 Fonnte Pricing
-
-| Paket | Harga/bulan | Pesan |
-|-------|-------------|-------|
-| Starter | ~Rp 50rb | ~1000 |
-| Regular | ~Rp 200rb | ~5000 |
-
----
-
-## 📊 Fonnte vs Meta API
-
-| Feature | Fonnte | Meta API |
-|---------|--------|----------|
-| Setup | ⭐⭐⭐⭐⭐ Mudah | ⭐⭐ Rumit |
-| Developer Account | ❌ Tidak perlu | ✅ Wajib |
-| Biaya | 💰 Terjangkau | 💰💰 Enterprise |
-| Support | ✅ Indonesia | ⚠️ English |
-
----
-
-## 🔧 Troubleshooting
-
-### Token Invalid
-- Cek token di dashboard Fonnte → Account
-- Pastikan pulsa masih ada
-
-### Pesan Tidak Terkirim  
-- Cek device status (harus "Connected")
-- Cek format phone: `628xxx` atau `08xxx`
-- Lihat logs di dashboard Fonnte
-
-### Webhook Tidak Jalan
-- Pastikan webhook URL sudah di-set di Fonnte
-- Test dengan ngrok untuk local dev
-- Endpoint: `/api/webhook-fonnte`
-
-**Lihat [SETUP-FONNTE.md](./SETUP-FONNTE.md) untuk troubleshooting lengkap**
-
----
-
-## 📚 Documentation
-
-- **[SETUP-FONNTE.md](./SETUP-FONNTE.md)** - Complete setup guide
-- **[migration.sql](./migration.sql)** - Database schema
-- **[Fonnte Docs](https://docs.fonnte.com)** - Fonnte API documentation
-
----
-
-## 🎉 Summary
-
-Web application siap pakai untuk integrasi WhatsApp dengan database:
-
-✅ No Meta Developer account needed  
-✅ Quick & easy setup  
-✅ Auto-reply system  
-✅ Message tracking  
-✅ Contact management  
-✅ Production-ready  
-
-Perfect untuk UKM, prototyping, dan learning projects!
-
----
-
-## 📄 License
-
-MIT License
-
-## 👨‍💻 Support
-
-- Fonnte: [support@fonnte.com](mailto:support@fonnte.com)
-- WhatsApp Support: Tersedia di dashboard Fonnte
+**Troubleshooting:**
+Jika bot tidak membalas di Vercel:
+1. Cek `FONNTE_TOKEN` di Environment Variables Vercel.
+2. Cek URL Webhook di Fonnte (harus `https` dan benar).
+3. Cek apakah database `monitoring_logs` terisi data.
